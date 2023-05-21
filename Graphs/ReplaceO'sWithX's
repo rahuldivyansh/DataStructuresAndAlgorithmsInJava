@@ -1,0 +1,59 @@
+//User function Template for Java
+
+class Solution{
+    
+    static int [] delrow = {-1, 0, 1, 0};
+    static int [] delcol = {0, 1, 0, -1};
+    
+    static void dfs(char[][] ans, int[][] vis, int row, int col){
+        vis[row][col] = 1;
+        int n = ans.length;
+        int m = ans[row].length;
+        
+        for(int i = 0; i < 4; i++){
+            int nrow = row + delrow[i];
+            int ncol = col + delcol[i];
+            
+            if((nrow >= 0 && nrow < n && ncol >= 0 && ncol < m) && (ans[nrow][ncol] == 'O' && vis[nrow][ncol] == 0)){
+                dfs(ans, vis, nrow, ncol);
+            }
+        }
+    }
+    
+    static char[][] fill(int n, int m, char a[][])
+    {
+        int [][]vis = new int [n][m];
+        char [][]ans = a;
+        
+        // Checking all four boundaries for O's.
+        for(int i = 0; i < m; i++){
+            // First row
+            if(ans[0][i] == 'O' && vis[0][i] == 0)
+                dfs(ans, vis, 0, i);
+                
+            // Last row
+            if(ans[n-1][i] == 'O' && vis[n-1][i] == 0)
+                dfs(ans, vis, n-1, i);
+        }
+        
+        for(int i = 0; i < n; i++){
+            // First column
+            if(ans[i][0] == 'O' && vis[i][0] == 0)
+                dfs(ans, vis, i, 0);
+                
+            // Last column
+            if(ans[i][m-1] == 'O' && vis[i][m-1] == 0)
+                dfs(ans, vis, i, m-1);
+        }
+        
+        // Now changing the remaining O's which are not connected to the boundary to X.
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                if(ans[i][j] == 'O' && vis[i][j] == 0)
+                    ans[i][j] = 'X';
+            }
+        }
+
+        return ans;
+    }
+}
