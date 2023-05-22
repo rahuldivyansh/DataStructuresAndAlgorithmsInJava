@@ -1,0 +1,53 @@
+class Solution
+{
+    public static boolean check(int node, ArrayList<ArrayList<Integer>>adj, int [] colored){
+        int [] color = {0,1}; // Every node will be colored with either 0 or 1.
+        
+        Queue<Integer> q = new ArrayDeque<>();
+        q.add(node);
+        colored[node] = 0;
+        while(!q.isEmpty()){
+            int top = q.poll();
+            
+            // Add color to all neighbours of top which is already colored.
+            for(int neighbour: adj.get(top)){
+                
+                // If neighbour is not colored, color it with color opposite of top(neighbour's neighbour).
+                if(colored[neighbour] == -1){
+                    colored[neighbour] = 1 - colored[top];
+                    q.add(neighbour);
+                } 
+                /* If the neighbour is already colored, check if it has 
+                    same color as adjacent, if yes return false */
+                else{
+                    if(colored[neighbour] == colored[top]){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    
+    public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)
+    {
+        int [] colored = new int[V]; // This array will store the color given to each node.
+        
+        //Initially -1 is the color given to each node.
+        for(int i = 0; i< V; i++){
+            colored[i] = -1;
+        }
+        
+        /* check for each node. if it isn't colored, go and color 
+            the graph connected to it and if it isn't bipartite, check() returns
+            false so we return false. Else keep going. */
+        for(int i = 0; i < V; i++){
+            if(colored[i] == -1){
+                if(check(i, adj, colored) == false)
+                    return false;
+            }
+            
+        }
+        return true;
+    }
+}

@@ -1,0 +1,66 @@
+// User function Template for Java
+
+class Solution {
+    
+    static void dfs(int row, int col, int [][] vis, ArrayList<String> list, int [][] grid, int row0, int col0){
+        
+        int n = grid.length;
+        int m = grid[0].length;
+        
+        /* We modify the values to be inserted in list because it has to match with 
+            other islands' structure. See notebook for detailed explanation. */
+        list.add(toString(row - row0 , col - col0));
+        
+        vis[row][col] = 1;
+        
+        int [] delrow = {-1, 0, 1, 0};
+        int [] delcol = {0, 1, 0, -1};
+        
+        for(int i = 0; i < 4; i++){
+            int nrow = row + delrow[i];
+            int ncol = col + delcol[i];
+            
+            if((nrow >= 0 && nrow < n && ncol >= 0 && ncol < m)){
+                if(grid[nrow][ncol] == 1 && vis[nrow][ncol] == 0){
+                    dfs(nrow, ncol, vis, list, grid, row0, col0);
+                }
+            }
+        }
+    }
+    
+    private static String toString(int row, int col){
+        return Integer.toString(row) + " " + Integer.toString(col);
+    }
+
+    int countDistinctIslands(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+        int [][] vis = new int [n][m];
+        
+        /* We store the structure of islands in this
+         set using arraylists which contains indexes.*/
+        HashSet <ArrayList<String>> set = new HashSet<>();  
+        
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                
+                // If the element is 1, it is part of an island.
+                // If that island is not previously visited, go and visit it.
+                if(grid[i][j] == 1 && vis[i][j] == 0){
+                    
+                    // list to store structure of new island
+                    ArrayList<String> list = new ArrayList<>();
+                    
+                    // Traverse the new island and store the elements' indexes(reduced) in list.
+                    dfs(i, j, vis, list, grid, i, j);
+                    
+                    /* add the updated list containing the 
+                        indexes of elements of island in set. */
+                    set.add(list);
+                }
+            }
+        }
+        
+        return set.size();
+    }
+}
