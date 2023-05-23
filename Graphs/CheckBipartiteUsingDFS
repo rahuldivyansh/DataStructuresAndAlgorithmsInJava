@@ -1,0 +1,44 @@
+class Solution
+{
+    // Checking for bipartite using DFS
+        public static boolean check(int node, int color, ArrayList<ArrayList<Integer>> adj, int [] colored){
+            
+            colored[node] = color;
+            
+            for(int neighbour: adj.get(node)){
+                if(colored[neighbour] == -1){
+                    if(check(neighbour, 1-color, adj, colored) == false){
+                        return false;
+                    }
+                } 
+                    else if(colored[neighbour] == color){
+                        return false;
+                    }
+                
+            }
+            
+            return true;
+        }
+        public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)
+        {
+            int [] colored = new int[V]; // This array will store the color given to each node.
+            
+            //Initially -1 is the color given to each node.
+            for(int i = 0; i< V; i++){
+                colored[i] = -1;
+            }
+            
+            /* check for each node. if it isn't colored, go and color 
+                the graph connected to it and if it isn't bipartite, check() returns
+                false so we return false. Else keep going. */
+            for(int i = 0; i < V; i++){
+                if(colored[i] == -1){
+                    if(check(i, 0, adj, colored) == false){
+                        return false;
+                    }
+                }
+                
+            }
+            return true;
+        }
+    }
