@@ -1,0 +1,39 @@
+
+/*Complete the function below*/
+
+class Solution {
+    
+    private static boolean dfs(int start, int [] vis, int [] pathVis, ArrayList<ArrayList<Integer>> adj){
+        vis[start] = 1;
+        pathVis[start] = 1;
+        
+        for(int neighbour: adj.get(start)){
+            if(vis[neighbour] == 0){
+                if(dfs(neighbour, vis, pathVis, adj) == true){
+                    return true;
+                } 
+            } else if(vis[neighbour] == 1 && pathVis[neighbour] == 1){
+                return true;
+            }
+        }
+        
+        pathVis[start] = 0;
+        return false;
+    }
+    
+    // Function to detect cycle in a directed graph.
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+        
+        int vis[] = new int[V];
+        int pathVis[] = new int[V];
+        
+        for(int i = 0; i < V; i++){
+            if(vis[i] == 0){
+                if(dfs(i, vis, pathVis, adj) == true){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
