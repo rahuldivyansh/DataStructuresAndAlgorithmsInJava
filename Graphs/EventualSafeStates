@@ -1,0 +1,42 @@
+// User function Template for Java
+
+class Solution {
+
+    static List<Integer> ansList;
+    
+    private static boolean dfs(int start, int [] vis, int [] pathVis, List<List<Integer>> adj){
+        vis[start] = 1;
+        if(adj.get(start).size() == 0)  return true;    // Reached terminal node.
+        pathVis[start] = 1;
+        for(int neighbour: adj.get(start)){
+            if(vis[neighbour] == 0){
+                if(dfs(neighbour, vis, pathVis, adj) == false){
+                    return false;
+                } else{
+                    ansList.add(neighbour);
+                }
+            } else if(pathVis[neighbour] == 1){     // A cycle exists
+                return false;
+            }
+        }
+        pathVis[start] = 0;
+        return true;
+    } 
+    
+    List<Integer> eventualSafeNodes(int V, List<List<Integer>> adj) {
+        ansList = new ArrayList<>();
+       
+        int vis[] = new int[V];
+        int pathVis[] = new int[V];
+        
+        for(int i = 0; i<V; i++){
+            if(vis[i] == 0){
+                if(dfs(i, vis, pathVis, adj) == true){
+                    ansList.add(i);
+                }
+            }
+        }
+        Collections.sort(ansList);
+        return ansList;
+    }
+}
