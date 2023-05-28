@@ -1,0 +1,52 @@
+//User function Template for Java
+
+class Solution {
+
+    public boolean isPossible(int N, int[][] prerequisites)
+    {
+      ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+      for(int i = 0; i < N; i++){
+          adj.add(new ArrayList<>());
+      }
+      
+       // Forming the adj list for graph out of prerequisites.
+      for(int i = 0; i < prerequisites.length; i++){
+          adj.get(prerequisites[i][0]).add(prerequisites[i][1]);
+      }
+   
+      // Indegree array for storing indegree's for vertices.
+      int [] indeg = new int[N];
+      for(int i = 0; i < N; i++){
+          for(int neighbour: adj.get(i)){
+              indeg[neighbour]++;
+          }
+      }
+       
+      // Adding vertices with zero indegree into the queue.
+      Queue<Integer> q = new ArrayDeque<>();
+      for(int i = 0; i < N; i++){
+          if(indeg[i] == 0){
+              q.add(i);
+          }
+      }
+       
+      // Creating topological ordering.
+      ArrayList <Integer> ans = new ArrayList<>();
+      while(!q.isEmpty()){
+          int top = q.poll();
+          ans.add(top);
+          for(int neighbour: adj.get(top)){
+              if(--indeg[neighbour] == 0){
+                  q.add(neighbour);
+              }
+          }
+      }
+       
+       /* If the proper topological ordering gets created,  it means 
+       that its size will be equal to number of tasks or (vertices)*/
+       
+      if(ans.size() == N) return true;
+      else return false;
+    }
+    
+}
