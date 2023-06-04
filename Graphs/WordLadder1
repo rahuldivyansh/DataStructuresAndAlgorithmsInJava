@@ -1,0 +1,55 @@
+class Pair{
+    String word;
+    int lvl;
+    Pair(String word, int lvl){
+        this.word = word;
+        this.lvl = lvl;
+    }
+}
+class Solution
+{
+    public int wordLadderLength(String startWord, String targetWord, String[] wordList)
+    {
+        Queue<Pair> q = new ArrayDeque<>();
+        q.add(new Pair(startWord, 1));  
+        
+        // Creating a set of strings and copying array in it.
+        Set<String> set = new HashSet<String>(Arrays.asList(wordList)); 
+        set.remove(startWord);
+        
+        // Checking all words till queue becomes empty
+        while(!q.isEmpty()){
+            String word = q.peek().word;
+            int lvl = q.peek().lvl;
+            q.remove();
+            
+            // If the word is the target word that we are looking for, 
+            //return the number of steps that took us to react it from startWord.
+            if(word.equals(targetWord))
+                return lvl;
+            
+            
+            // Check the variations of word extracted from queue that exists in wordList.
+            // replace each character of ‘word’ with char
+            // from a-z then check if ‘tempWord’ exists in wordList.
+            for(int i = 0; i < word.length(); i++){
+                for(char ch = 'a'; ch <= 'z'; ch++){
+                    
+                    // Replacing word to new tempWord
+                    char charArray[] = word.toCharArray();
+                    charArray[i] = ch;
+                    String tempWord = new String(charArray);
+
+                    // If the set contains the new word, that means it exits in the 
+                    // wordList and is not already checked.
+                    if(set.contains(tempWord)){
+                        set.remove(tempWord);
+                        q.add(new Pair(tempWord, lvl + 1));
+                    }
+                }
+            }
+        }
+        
+        return 0;
+    }
+}
