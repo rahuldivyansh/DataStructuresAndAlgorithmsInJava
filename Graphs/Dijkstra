@@ -1,0 +1,56 @@
+//User function Template for Java
+
+
+class Pair {
+    int distance;
+    int node;
+
+    Pair(int dis, int node) {
+        this.distance = dis;
+        this.node = node;
+    }
+}
+
+class Solution {
+    // Function to find the shortest distance of all the vertices
+    // from the source vertex S using Dijkstra's algorithm.
+    static int[] dijkstra(int V, ArrayList<ArrayList<ArrayList<Integer>>> adj, int S) {
+        // Create a priority queue to store the node, distance pairs.
+        // The priority queue is ordered based on the distance value.
+        PriorityQueue<Pair> pq = new PriorityQueue<>((x, y) -> x.distance - y.distance);
+
+        // Create an array to store the shortest distances.
+        int[] dist = new int[V];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+
+        // Add source node to the priority queue and set its shortest distance to 0.
+        pq.add(new Pair(0, S));
+        dist[S] = 0;
+
+        while (!pq.isEmpty()) {
+            // Extract the pair with the smallest distance from the priority queue.
+            int dis = pq.peek().distance;
+            int node = pq.peek().node;
+            pq.remove();
+
+            // Iterate through the neighbors of the current node.
+            for (ArrayList<Integer> neighbor : adj.get(node)) {
+                int neighborNode = neighbor.get(0);
+                int edgeWeight = neighbor.get(1);
+
+                // Calculate the new distance to the neighbor node.
+                int newDistance = dist[node] + edgeWeight;
+
+                // If the new distance is smaller than the current distance, update it.
+                if (newDistance < dist[neighborNode]) {
+                    dist[neighborNode] = newDistance;
+
+                    // Add the neighbor node to the priority queue with the updated distance.
+                    pq.add(new Pair(dist[neighborNode], neighborNode));
+                }
+            }
+        }
+
+        return dist;
+    }
+}
