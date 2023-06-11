@@ -1,0 +1,56 @@
+/ User function Template for Java
+class Pair{
+    int i;
+    int j;
+    int dist;
+    Pair(int i, int j, int dist){
+        this.i = i;
+        this.j = j;
+        this.dist = dist;
+    }
+}
+class Solution {
+
+    int shortestPath(int[][] grid, int[] source, int[] destination) {
+
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(source[0], source[1], 0));
+        
+        int [][] vis = new int[grid.length][grid[0].length];
+        vis[source[0]][source[1]] = 1;
+        int dist = 0;
+        
+        int vi = destination[0];
+        int vj = destination[1];
+        
+        while(!q.isEmpty()){
+            Pair p = q.poll();
+            int i = p.i;
+            int j = p.j;
+            dist = p.dist;
+            
+            if(i == vi && j == vj) return dist;
+            
+            int[] delRow = {-1,0,1,0};
+            int[] delCol = {0,1,0,-1};
+            
+            for(int idx = 0; idx < 4; idx++){
+                int nRow = i + delRow[idx];
+                int nCol = j + delCol[idx];
+                
+                if(nRow >= 0 && nRow < grid.length && nCol >=0 && nCol < grid[0].length){
+                    if(grid[nRow][nCol] == 1 && vis[nRow][nCol] == 0){
+                        vis[nRow][nCol] = 1;
+                        q.add(new Pair(nRow, nCol, dist + 1));
+                    }
+                }
+                
+            }
+        }
+
+        // if the destination is not reached, then its value in vis  will be 0, so we return -1
+        if(vis[vi][vj] == 0)    return -1;
+        
+        return dist;
+    }
+}
