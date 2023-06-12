@@ -1,0 +1,60 @@
+class Pair{
+    int diff;
+    int row;
+    int col;
+    Pair(int diff, int row, int col){
+        this.diff = diff;
+        this.row = row;
+        this.col = col;
+    }
+}
+class Solution {
+    
+    int MinimumEffort(int heights[][]) {
+        
+        // Create a priority queue to implement dijkstra's.
+        PriorityQueue<Pair> pq = new PriorityQueue<>((x,y) -> x.diff - y.diff);
+        pq.add(new Pair(0, 0, 0));  // Source(0, 0) is having difference 0.
+        
+        int rows = heights.length;
+        int cols = heights[0].length;
+        int[][] dist = new int[rows][cols];     // array to store efforts along paths.
+        
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < cols; j++){
+                dist[i][j] = (int)1e9;
+            }
+        }
+        dist[0][0] = 0;
+        
+        while(!pq.isEmpty()){
+            Pair p = pq.poll();
+            int row = p.row;
+            int col = p.col;
+            int diff = p.diff;
+            
+            if(row == rows-1 && col == cols-1)  return diff;
+            
+            int[][] neighbours = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+            
+            for(int i = 0; i < 4; i++){
+                
+                int nRow = row + neighbours[i][0];
+                int nCol = col + neighbours[i][1];
+                
+                if(nRow >= 0 && nRow < rows && nCol >= 0 && nCol < cols){
+                    
+                    int newEffort = Math.max(diff, Math.abs(heights[nRow][nCol] - heights[row][col]));
+                    
+                    if(newEffort < dist[nRow][nCol]){
+                        dist[nRow][nCol] = newEffort;
+                        pq.add(new Pair(newEffort, nRow, nCol));
+                    }
+                }
+            }
+            
+        }
+        
+        return 0;
+    }
+}
