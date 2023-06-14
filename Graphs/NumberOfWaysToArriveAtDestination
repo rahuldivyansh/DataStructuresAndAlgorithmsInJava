@@ -1,0 +1,71 @@
+// User function Template for Java
+class Pair{
+    int v, time;
+    Pair(int v, int time){
+        this.v = v;
+        this.time = time;
+    }
+}
+class Tuple{
+    long time;
+    int node;
+    Tuple(long time, int node){
+        this.time = time;
+        this.node = node;
+    }
+}
+class Solution {
+
+    static int countPaths(int n, List<List<Integer>> roads) {
+        
+        // Creating graph 
+        ArrayList<ArrayList<Pair>> adj = new ArrayList<>();
+        for(int i = 0; i < n; i++){
+            adj.add(new ArrayList<Pair>());
+        }
+        
+        for(List<Integer> elem: roads){
+            int u = elem.get(0);
+            int v = elem.get(1);
+            int t = elem.get(2);
+            
+            adj.get(u).add(new Pair(v, t));
+            adj.get(v).add(new Pair(u, t));
+        }
+        
+        //
+        PriorityQueue<Tuple> q = new PriorityQueue<Tuple>((x, y) -> (int)(x.time - y.time));
+        q.add(new Tuple(0, 0));
+        
+        // To store number of shortest ways possible from 0 to i.
+        int[] ways = new int[n];   
+        ways[0] = 1;        // There is only one way to go from 0 to 0
+        
+        // To store the minimum time required to go from 0 to i.
+        long[] minTime = new long[n];   
+        Arrays.fill(minTime, Long.MAX_VALUE);
+        minTime[0] = 0;     // Time required to go from 0 to 0 is 0.
+        
+        while(!q.isEmpty()){
+            Tuple top = q.poll();
+            long topTime = top.time;
+            int node = top.node;
+            
+            for(Pair p : adj.get(node)){
+                int v = p.v;
+                int time = p.time;  
+                        
+                if(topTime + time < minTime[v]){
+                    minTime[v] = topTime + time;
+                    ways[v] = ways[node];
+                    q.add(new Tuple(minTime[v], v));
+                } 
+                else if(topTime + time == minTime[v]){
+                    ways[v] = (ways[v] + ways[node]) % (int)(1e9 + 7);
+                }
+            }
+        }
+        
+        return ways[n-1] % (int)(1e9 + 7);
+    }
+}

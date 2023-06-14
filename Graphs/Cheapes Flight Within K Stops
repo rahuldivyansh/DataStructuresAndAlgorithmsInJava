@@ -1,0 +1,85 @@
+// For queue elements
+class Pair {
+    int stops;
+    int node;
+    int distance;
+
+    Pair(int stops, int node, int dis) {
+        this.stops = stops;
+        this.node = node;
+        this.distance = dis;
+    }
+}
+// For graph representation
+class Pair1{
+    int node;
+    int price;
+    Pair1(int node, int price){
+        this.node = node;
+        this.price = price;
+    }
+}
+
+class Solution {
+    
+    public int CheapestFLight(int n,int flights[][],int src,int dst,int k) {
+        
+        int V = n;
+        int S = src;
+        
+        ArrayList<ArrayList<Pair1>> adj = new ArrayList<>();
+        for(int i = 0 ; i<V; i++){
+            adj.add(new ArrayList<Pair1>());
+        }
+        
+        for(int i = 0; i < flights.length; i++){
+            int u = flights[i][0];
+            int v = flights[i][1];
+            int price = flights[i][2];
+            adj.get(u).add(new Pair1(v, price));
+        }
+    
+        Queue<Pair> pq = new LinkedList<>();
+
+        // Create an array to store the shortest distances.
+        int[] dist = new int[V];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+
+        // Add source node to the queue and set its shortest distance to 0.
+        pq.add(new Pair(0, S, 0));
+        dist[S] = 0;
+
+        while (!pq.isEmpty()) {
+            // Extract the pair with the smallest distance from the queue.
+            int stops = pq.peek().stops;
+            int node = pq.peek().node;
+            int dis = pq.peek().distance;
+            pq.remove();
+            
+            // If the stops is >k, it will only increase and not decrease on iterating more.
+            // We need stops<=k so no need to go forward.
+            if(stops > k) break;
+
+            // Iterate through the neighbors of the current node.
+            for (Pair1 neighbor : adj.get(node)) {
+                int neighborNode = neighbor.node;
+                int edgeWeight = neighbor.price;
+
+                // Calculate the new distance to the neighbor node.
+                int newDistance = dis + edgeWeight;
+
+                // If the new distance is smaller than the current distance, update it.
+                if (newDistance < dist[neighborNode]) {
+                    dist[neighborNode] = newDistance;
+
+                    // Add the neighbor node to the queue with the updated distance and stop.
+                    pq.add(new Pair(stops + 1, neighborNode , newDistance));
+                }
+            }
+        }
+
+        if(dist[dst] == Integer.MAX_VALUE)  return -1;
+        
+        return dist[dst];
+    }
+}

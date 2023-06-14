@@ -1,0 +1,44 @@
+// User function Template for Java
+class Pair{
+    int steps, num;
+    Pair(int steps, int num){
+        this.steps = steps;
+        this.num = num;
+    }
+}
+
+
+
+class Solution {
+    int minimumMultiplications(int[] arr, int start, int end) {
+
+        Queue<Pair> q = new ArrayDeque<>();
+        q.add(new Pair(0, start));
+        
+        int[] dist = new int[(int)1e5];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[start] = 0;
+        
+        while(!q.isEmpty()){
+            Pair top = q.poll();
+            int steps = top.steps;
+            int num = top.num;
+            
+            for(int elem: arr){
+                int newNum = (num * elem) % 100000;
+                
+                if(newNum == end)   return steps + 1;
+                
+                if(dist[newNum] > steps + 1){
+                    dist[newNum] = steps + 1;
+                    q.add(new Pair(steps + 1, newNum));
+                }
+            }
+        }
+        
+        if(dist[end] == Integer.MAX_VALUE)  return -1;
+        
+        return dist[end];
+        
+    }
+}
