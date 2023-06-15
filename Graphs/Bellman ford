@@ -1,0 +1,51 @@
+// User function Template for Java
+
+/*
+*   edges: vector of vectors which represents the graph
+*   S: source vertex to start traversing graph with
+*   V: number of vertices
+*/
+class Solution {
+    static int[] bellman_ford(int V, ArrayList<ArrayList<Integer>> edges, int S) {
+        
+        // Create dist array and initialize with 1e8 except dist[S] = 0
+        int[] dist = new int[V];
+        for(int i = 0; i < V; i++)  dist[i] = (int)(1e8);
+        dist[S] = 0;
+        
+        // Run the outer loop for V-1 times to relax all the edges.
+        for(int i = 0; i < V-1; i++){
+            // Run inner loop for every element in edges to relax them 
+            for(ArrayList<Integer> elem: edges){
+                int u = elem.get(0);
+                int v = elem.get(1);
+                int wt = elem.get(2);
+                
+                // Relaxation step
+                if( dist[u] + wt < dist[v]){
+                    dist[v] = dist[u] + wt;
+                }
+            }
+        }
+        
+        // This loop is ran to check if the graph contains negative cycle, it will
+        // update the dist array on Nth interation as well bcoz the negative cycle
+        // keeps on reducing edges infinitely.
+        for(ArrayList<Integer> elem: edges){
+            int u = elem.get(0);
+            int v = elem.get(1);
+            int wt = elem.get(2);
+            
+            
+            // When the negative cycle is found, return array containing -1
+            if( dist[u] + wt < dist[v]){
+                int[] temp = new int[1];
+                temp[0] = -1;
+                return temp;
+            }
+        }
+        
+        return dist;
+        
+    }
+}
