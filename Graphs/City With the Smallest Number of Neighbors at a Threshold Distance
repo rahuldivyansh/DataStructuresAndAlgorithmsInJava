@@ -1,0 +1,67 @@
+// User function Template for Java
+
+class Solution {
+      int findCity(int n, int m, int[][] edges,int distanceThreshold)
+      {
+        // Creating adjacency matrix.
+        int [][] matrix = new int[n][n];
+        for(int i =0; i < m; i++){
+            int u = edges[i][0];
+            int v = edges[i][1];
+            int wt = edges[i][2];
+            matrix[u][v] = wt;
+            matrix[v][u] = wt;
+    
+        }
+        // Assigning max value between those vertices where direct edge is not available.
+        for(int i = 0; i < matrix.length;i++){
+                for(int j = 0; j < matrix[i].length; j++){
+                    // As we use comparision later to find shortest path, we need max 
+                    // value initially in place of 0. And here that max value of 
+                    // matrix[i][j] is given as 10000
+                    if(matrix[i][j] == 0){
+                        matrix[i][j] = 10001;    
+                    }
+                }
+            }
+           
+        // Finding shortest dist for each pair using Floyd Warshall.
+        for(int k = 0; k < matrix.length; k++){
+            for(int i = 0; i < matrix.length;i++){
+                for(int j = 0; j < matrix[i].length; j++){
+                    if(matrix[i][k] + matrix[k][j] < matrix[i][j]){
+                        matrix[i][j] = matrix[i][k] + matrix[k][j];
+                    }
+                }
+            }
+        }
+        
+        // This stores the number of neighbouring cities under threshold for each vertex.
+        int [] cities = new int[n];
+        
+        // Changing 1001 to -1
+        for(int i = 0; i < matrix.length;i++){
+                for(int j = 0; j < matrix[i].length; j++){
+                    
+                    // If the i to j path is less than threshold, increase the 
+                    // number of cities for i.
+                     if(matrix[i][j] <= distanceThreshold && i != j){
+                        cities[i] += 1;
+                    }
+                }
+            }
+        
+        // Finding the city with smallest number of neighbours.
+        int min = Integer.MAX_VALUE;
+        int city = -1;
+        // System.out.println(list);
+        for(int i = 0; i < n; i++){
+            if(cities[i] <= min){
+                min = cities[i];
+                city = i;
+            }
+        }
+        
+        return city;
+    }
+}
