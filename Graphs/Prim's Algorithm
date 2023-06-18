@@ -1,0 +1,80 @@
+// User function Template for Java
+class Tuple{
+    int wt, node, parent;
+    Tuple(int wt, int node, int parent){
+        this.wt = wt;
+        this.node = node;
+        this.parent = parent;
+    }
+}
+
+class Pair{
+    int u, wt;
+    Pair(int u, int wt){
+        this.u = u;
+        this.wt = wt;
+    }
+}
+class Solution{
+	static int spanningTree(int V, int E, int edges[][]){
+	    
+	    // Create a graph represented by adj list using edges.
+	    ArrayList<ArrayList<Pair>> adj = new ArrayList<>();
+	    for(int i = 0; i < V; i++){
+	        adj.add(new ArrayList<Pair>());
+	    }
+	    for(int i = 0; i < E; i++){
+	        int u1 = edges[i][0];
+	        int u2 = edges[i][1];
+	        int wt = edges[i][2];
+	        
+	        adj.get(u1).add(new Pair(u2, wt));
+	        adj.get(u2).add(new Pair(u1, wt));
+	    }
+	
+	    // This is used in process of prim's.
+	    PriorityQueue<Tuple> pq= new PriorityQueue<>((x, y) -> x.wt - y.wt);
+	    pq.add(new Tuple(0, 0, -1));
+	    int [][] mst = new int[V][2];    // will contain edges denoting min spanning tree;
+	    int idx = -1;
+	    
+	    int [] vis = new int[V];    // Contains data about which vertex has been vis and processed.
+	    int mstSum = 0;
+	    
+	    while(!pq.isEmpty()){
+	        Tuple top = pq.poll();
+	        int wt = top.wt;
+	        int node = top.node;
+	        int parent = top.parent;
+	        
+	        // if the node is already visited, then it sum is already added and its
+	        // adjacent nodes have already been visited. so no need to do any operation.
+	        if(vis[node] == 1) continue;
+	        
+	        // If the node is not already visited, visit it.
+	        vis[node] = 1;
+	            
+	        if(parent != -1) {
+    	        // Add weight of the edge from parent to node in mstSum.
+    	        mstSum += wt;
+    	        // Add the edge into the mst edges array.
+    	        idx++;
+    	        mst[idx][0] = parent;
+    	        mst[idx][1] = node;
+	        }  
+	        
+	        
+	        for(Pair elem: adj.get(node)){
+	            int adjNode = elem.u;
+	            int adjWt = elem.wt;
+	            
+	            if(vis[adjNode] != 1){
+    	            pq.add(new Tuple(adjWt, adjNode, node));
+	            }
+	                
+	            
+	        }
+	    }
+	    return mstSum;
+	}
+}
