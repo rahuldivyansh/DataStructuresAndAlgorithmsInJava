@@ -1,0 +1,123 @@
+// User function Template for Java
+class DisjointSet {
+
+    ArrayList<Integer> rank = new ArrayList<>();    // used in union by rank
+    ArrayList<Integer> size = new ArrayList<>();    // used in union by size
+    ArrayList<Integer> parent = new ArrayList<>();  // common in both
+
+    DisjointSet(int n) {
+        for (int i = 0; i <= n; i++) {
+            rank.add(0);
+            parent.add(i);
+            size.add(1);
+        }
+    }
+
+    public int findParent(int u) {
+        if (parent.get(u) == u) {
+            return u;
+        }
+
+        int ultimateParent = findParent(parent.get(u));
+        parent.set(u, ultimateParent);
+        return parent.get(u);
+    }
+
+    public void unionByRank(int u, int v) {
+        int ulp_U = findParent(u);
+        int ulp_V = findParent(v);
+
+        // u and v are already part of the same component, so no union needed.
+        if (ulp_U == ulp_V)
+            return;
+
+        int rankU = rank.get(ulp_U);
+        int rankV = rank.get(ulp_V);
+        if (rankU > rankV) {
+            parent.set(ulp_V, ulp_U);
+        } else if (rankU < rankV) {
+            parent.set(ulp_U, ulp_V);
+        } else {
+            parent.set(ulp_U, ulp_V);
+            rank.set(ulp_V, rankV+1);
+        }
+    }
+
+    public void unionBySize(int u, int v){
+        int ulp_U = findParent(u);
+        int ulp_V = findParent(v);
+
+        // u and v are already part of the same component, so no union needed.
+        if (ulp_U == ulp_V)
+            return;
+
+        int sizeU = size.get(ulp_U);
+        int sizeV = size.get(ulp_V);
+        if (sizeU > sizeV) {
+            parent.set(ulp_V, ulp_U);
+            size.set(ulp_U, sizeV+sizeU);
+        } else {
+            parent.set(ulp_U, ulp_V);
+            size.set(ulp_V, sizeV+sizeU);
+        } 
+    }
+}
+
+class Solution {
+
+    public List<List<String>> mergeDetails(List<List<String>> details) {
+        int n = details.size();
+        
+        DisjointSet set = new DisjointSet(n);
+        HashMap <String, Integer> map = new HashMap<>();
+        
+        // Traverse through each email in details and map them to a node.
+        for(int i = 0; i < n; i++){
+            
+            // As the first string is name so we start from second string which is email.
+            for(int j = 1; j < details.get(i).size(); j++){
+                
+                String email = details.get(i).get(j);
+                
+                if(map.containsKey(email) == false){
+                    map.put(email, i);
+                } else{
+                    set.unionBySize(i, map.get(email));
+                }
+                
+            }
+        }
+        
+        ArrayList<String>[] mergedMail = new ArrayList[n];
+        for(int i = 0; i < n; i++){
+            mergedMail[i] = new ArrayList<String>();
+        }
+        
+        for(Map.Entry<String, Integer> it: map.entrySet()){
+            String mail = it.getKey();
+            int node = set.findParent(it.getValue());
+            mergedMail[node].add(mail);
+        }
+        
+        List<List<String>> ans = new ArrayList<>();
+       
+        
+        for(int i = 0; i < n; i++){
+            if(mergedMail[i].size() == 0) continue;
+            
+            Collections.sort(mergedMail[i]);
+            List<String> temp = new ArrayList<>();
+            temp.add(details.get(i).get(0));    // Added name at first
+            
+            // Add the merged email of i.
+            for(String it : mergedMail[i]){
+                temp.add(it);
+            }
+            
+            ans.add(temp);
+        }
+        
+        return ans;
+    
+    }
+}

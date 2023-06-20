@@ -1,0 +1,102 @@
+class DisjointSet {
+
+    ArrayList<Integer> rank = new ArrayList<>();    // used in union by rank
+    ArrayList<Integer> size = new ArrayList<>();    // used in union by size
+    ArrayList<Integer> parent = new ArrayList<>();  // common in both
+
+    DisjointSet(int n) {
+        for (int i = 0; i <= n; i++) {
+            rank.add(0);
+            parent.add(i);
+            size.add(1);
+        }
+    }
+
+    public int findParent(int u) {
+        if (parent.get(u) == u) {
+            return u;
+        }
+
+        int ultimateParent = findParent(parent.get(u));
+        parent.set(u, ultimateParent);
+        return parent.get(u);
+    }
+
+    public void unionByRank(int u, int v) {
+        int ulp_U = findParent(u);
+        int ulp_V = findParent(v);
+
+        // u and v are already part of the same component, so no union needed.
+        if (ulp_U == ulp_V)
+            return;
+
+        int rankU = rank.get(ulp_U);
+        int rankV = rank.get(ulp_V);
+        if (rankU > rankV) {
+            parent.set(ulp_V, ulp_U);
+        } else if (rankU < rankV) {
+            parent.set(ulp_U, ulp_V);
+        } else {
+            parent.set(ulp_U, ulp_V);
+            rank.set(ulp_V, rankV+1);
+        }
+    }
+
+    public void unionBySize(int u, int v){
+        int ulp_U = findParent(u);
+        int ulp_V = findParent(v);
+
+        // u and v are already part of the same component, so no union needed.
+        if (ulp_U == ulp_V)
+            return;
+
+        int sizeU = size.get(ulp_U);
+        int sizeV = size.get(ulp_V);
+        if (sizeU > sizeV) {
+            parent.set(ulp_V, ulp_U);
+            size.set(ulp_U, sizeV+sizeU);
+        } else {
+            parent.set(ulp_U, ulp_V);
+            size.set(ulp_V, sizeV+sizeU);
+        } 
+    }
+}
+
+class Solution {
+
+    public int Solve(int n, int[][] edge) {
+        
+        DisjointSet set = new DisjointSet(n);
+        int extraEdges = 0;
+        int componentCount = 0;
+        
+        // Connecting n nodes in disjoint set using min no of edges.
+        for(int i = 0; i < edge.length; i++){
+            int u = edge[i][0];
+            int v = edge[i][1];
+            
+            if(set.findParent(u) != set.findParent(v)){
+                set.unionBySize(u, v);
+            } else{
+                // Since u and v are already connected, we don't need to connect it,
+                // and we get an extra edge.
+                extraEdges++;
+            }
+        }
+        
+        // System.out.println(set.size);
+        // System.out.println(set.parent);
+        // System.out.println(set.parent.size());
+        // System.out.println(n);
+        // System.out.println(componentCount);
+        // System.out.println(extraEdges);
+        
+        for(int i = 0; i < n; i++){
+            if(set.parent.get(i) == i)
+                componentCount++;
+        }
+        
+        if(extraEdges >= componentCount-1)    return componentCount - 1;
+        else    return -1;
+    }
+}
