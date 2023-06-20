@@ -1,0 +1,127 @@
+
+class DisjointSet {
+
+    ArrayList<Integer> rank = new ArrayList<>();    // used in union by rank
+    ArrayList<Integer> size = new ArrayList<>();    // used in union by size
+    ArrayList<Integer> parent = new ArrayList<>();  // common in both
+
+    DisjointSet(int n) {
+        for (int i = 0; i <= n; i++) {
+            rank.add(0);
+            parent.add(i);
+            size.add(1);
+        }
+    }
+
+    public int findParent(int u) {
+        if (parent.get(u) == u) {
+            return u;
+        }
+
+        int ultimateParent = findParent(parent.get(u));
+        parent.set(u, ultimateParent);
+        return parent.get(u);
+    }
+
+    public void unionByRank(int u, int v) {
+        int ulp_U = findParent(u);
+        int ulp_V = findParent(v);
+
+        // u and v are already part of the same component, so no union needed.
+        if (ulp_U == ulp_V)
+            return;
+
+        int rankU = rank.get(ulp_U);
+        int rankV = rank.get(ulp_V);
+        if (rankU > rankV) {
+            parent.set(ulp_V, ulp_U);
+        } else if (rankU < rankV) {
+            parent.set(ulp_U, ulp_V);
+        } else {
+            parent.set(ulp_U, ulp_V);
+            rank.set(ulp_V, rankV+1);
+        }
+    }
+
+    public void unionBySize(int u, int v){
+        int ulp_U = findParent(u);
+        int ulp_V = findParent(v);
+
+        // u and v are already part of the same component, so no union needed.
+        if (ulp_U == ulp_V)
+            return;
+
+        int sizeU = size.get(ulp_U);
+        int sizeV = size.get(ulp_V);
+        if (sizeU > sizeV) {
+            parent.set(ulp_V, ulp_U);
+            size.set(ulp_U, sizeV+sizeU);
+        } else {
+            parent.set(ulp_U, ulp_V);
+            size.set(ulp_V, sizeV+sizeU);
+        } 
+    }
+}
+
+
+class Solution {
+    
+    public List<Integer> numOfIslands(int rows, int cols, int[][] operators) {
+        
+        List<Integer> ans = new ArrayList<>();
+        int [][] matrix = new int[rows][cols];
+        boolean [][] vis = new boolean[rows][cols];
+        int islands = 0;
+        
+        DisjointSet ds = new DisjointSet(rows * cols);  
+        
+        for(int[] elem: operators){
+            int i = elem[0];
+            int j = elem[1];
+            
+            // If it is already visited, so it is already part of a island. 
+            // Then we wont increase no of islands.
+            if(vis[i][j] == true){
+                ans.add(islands);
+                continue;
+            }
+            
+            vis[i][j] = true;
+            int size = ++islands;
+            
+            
+            int delIdx[][] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+            
+            for(int idx = 0; idx < 4; idx++){
+                
+                int adjRow = i + delIdx[idx][0];
+                int adjCol = j + delIdx[idx][1];
+                
+                if(adjRow >= 0 && adjRow < rows && adjCol >= 0 && adjCol < cols){
+                    
+                    // If the neighbour node is not visited, so its not part of any island
+                    // so we dont connect it as it is part of the sea.
+                    if(vis[adjRow][adjCol] == true){
+                        
+                        // There are n*m (4*5 = 20) nodes in disjoint set, so to get to any node
+                        // lets say 17, we need a formula eg. (3 * 5 + 2) = 17, which is given below
+                        int nodeNo = i * cols + j;
+                        int neighbourNodeNo = adjRow * cols + adjCol;
+                        
+                        // If the node and its neighbour are not from same island
+                        // then we connect them. and decrease number of islands count.
+                        if(ds.findParent(nodeNo) != ds.findParent(neighbourNodeNo)){
+                            ds.unionBySize(nodeNo, neighbourNodeNo);
+                            islands--;
+                        }     
+                    }
+                }
+            }
+            
+            // Keep adding the number of islands to ans list after each operation.
+            ans.add(islands);
+        }
+        return ans;
+    }
+    
+}
